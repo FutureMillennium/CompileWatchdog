@@ -16,6 +16,7 @@ namespace CompileWatchdog {
 		List<FileSystemWatcher> watchers = new List<FileSystemWatcher>();
 
 		DispatcherTimer timer1 = new DispatcherTimer();
+		bool blLoaded = false;
 
 		public MainForm() {
 			InitializeComponent();
@@ -95,6 +96,12 @@ namespace CompileWatchdog {
 		}
 
 		private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e) {
+			// Only un/check when clicking on the item, not on blank space
+			if (blLoaded && checkedListBox1.IndexFromPoint(checkedListBox1.PointToClient(Cursor.Position).X,
+			checkedListBox1.PointToClient(Cursor.Position).Y) <= -1) {
+				e.NewValue = e.CurrentValue;
+			}
+
 			if (e.NewValue == CheckState.Unchecked) {
 				watchedDirs[e.Index].enabled = false;
 			} else {
@@ -219,7 +226,7 @@ namespace CompileWatchdog {
 					//wd.justFired = false;
 				}
 			}
-		
+			blLoaded = true;
 		}
 
 		private void checkedListBox1_KeyDown(object sender, KeyEventArgs e) {
