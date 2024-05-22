@@ -89,6 +89,7 @@ namespace CompileWatchdog {
 			if (checkedListBox1.SelectedIndex >= 0) {
 				groupBox1.Text = watchedDirs[checkedListBox1.SelectedIndex].path;
 				compileCommandTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].compileCommand;
+				ignoreTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].ignore;
 				groupBox1.Visible = true;
 			} else {
 				groupBox1.Visible = false;
@@ -170,7 +171,7 @@ namespace CompileWatchdog {
 
 		void MyRefresh() {
 			if (checkedListBox1.SelectedIndex >= 0) {
-				if (watchedDirs[checkedListBox1.SelectedIndex].lastOutput.Length > 0 && watchedDirs[checkedListBox1.SelectedIndex].lastError.Length == 0) {
+				if (watchedDirs[checkedListBox1.SelectedIndex].lastOutput.Length == 0 && watchedDirs[checkedListBox1.SelectedIndex].lastError.Length == 0) {
 					lastOutputTextBox.Text = "(The output was empty.)";
 				} else {
 					lastOutputTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].lastOutput;
@@ -243,7 +244,7 @@ namespace CompileWatchdog {
 			//MessageBox.Show("File: " + e.FullPath + " " + e.ChangeType);
 			// compile
 			foreach (WatchedDir wd in watchedDirs) {
-				if (e.FullPath.StartsWith(wd.path)) {
+				if (wd.enabled && e.FullPath.StartsWith(wd.path) && !e.FullPath.StartsWith(wd.path + "\\" + wd.ignore)) {
 					wd.needsCompile = true;
 					timer1.Start();
 					break;
@@ -272,6 +273,12 @@ namespace CompileWatchdog {
 			notifyIcon1.Visible = true;
 			this.Hide();
 		}
+
+		private void ignoreTextBox_TextChanged(object sender, EventArgs e) {
+			if (checkedListBox1.SelectedIndex >= 0) {
+				watchedDirs[checkedListBox1.SelectedIndex].ignore = ignoreTextBox.Text;
+			}
+		}
 	}
 
 	public class WatchedDir {
@@ -282,5 +289,6 @@ namespace CompileWatchdog {
 		public string lastError;
 		//public bool justFired = false;
 		public bool needsCompile = false;
+		public string ignore = "bin";
 	}
 }
