@@ -24,7 +24,6 @@
 		/// </summary>
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
 			this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
 			this.quitButton = new System.Windows.Forms.Button();
@@ -163,7 +162,6 @@
 			this.Controls.Add(this.checkedListBox1);
 			this.Controls.Add(this.quitButton);
 			this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.Name = "MainForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;

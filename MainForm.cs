@@ -17,7 +17,8 @@ namespace CompileWatchdog {
 		public MainForm() {
 			InitializeComponent();
 			LoadSettings();
-			this.notifyIcon1.Icon = this.Icon;
+			this.Icon = Properties.Resources.icon;
+			this.notifyIcon1.Icon = Properties.Resources.icon;
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
