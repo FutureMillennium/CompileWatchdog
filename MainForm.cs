@@ -63,19 +63,23 @@ namespace CompileWatchdog {
 			// accept if it's a folder, add to watchedDirs and checkedListBox1
 			if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-				if (files.Length == 1 && System.IO.Directory.Exists(files[0])) {
-					WatchedDir wd = new WatchedDir();
-					wd.path = files[0];
-					wd.enabled = true;
-					//watchedDirs.Add(wd);
-					//// add and check
-					//checkedListBox1.Items.Add(wd.path, true);
+				blLoaded = false;
+				for (int i = 0; i < files.Length; i++) {
+					if (System.IO.Directory.Exists(files[i])) {
+						WatchedDir wd = new WatchedDir();
+						wd.path = files[i];
+						wd.enabled = true;
+						//watchedDirs.Add(wd);
+						//// add and check
+						//checkedListBox1.Items.Add(wd.path, true);
 
-					Add(wd);
+						Add(wd);
 
-					//checkedListBox1.SetItemChecked(checkedListBox1.Items.Count - 1, true);
-					//RefreshWatchedDirs();
+						//checkedListBox1.SetItemChecked(checkedListBox1.Items.Count - 1, true);
+						//RefreshWatchedDirs();
+					}
 				}
+				blLoaded = true;
 			}
 		}
 
@@ -207,18 +211,30 @@ namespace CompileWatchdog {
 		}
 
 		void SaveSettings() {
-			// save watchedDirs to settings.xml
+			// filename is exe name + Settings.xml
+			var filename = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+			if (filename.EndsWith(".exe")) {
+				filename = filename.Substring(0, filename.Length - 4);
+			}
+			filename += "Settings.xml";
+
 			System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(List<WatchedDir>));
-			System.IO.Stream s = new System.IO.FileStream("settings.xml", System.IO.FileMode.Create);
+			System.IO.Stream s = new System.IO.FileStream(filename, System.IO.FileMode.Create);
 			xs.Serialize(s, watchedDirs);
 			s.Close();
 		}
 
 		void LoadSettings() {
-			// load watchedDirs from settings.xml
-			if (System.IO.File.Exists("settings.xml")) {
+			// filename is exe name + Settings.xml
+			var filename = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+			if (filename.EndsWith(".exe")) {
+				filename = filename.Substring(0, filename.Length - 4);
+			}
+			filename += "Settings.xml";
+
+			if (System.IO.File.Exists(filename)) {
 				System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(List<WatchedDir>));
-				System.IO.Stream s = new System.IO.FileStream("settings.xml", System.IO.FileMode.Open);
+				System.IO.Stream s = new System.IO.FileStream(filename, System.IO.FileMode.Open);
 				watchedDirs = (List<WatchedDir>)xs.Deserialize(s);
 				s.Close();
 				foreach (WatchedDir wd in watchedDirs) {

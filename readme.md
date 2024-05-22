@@ -1,7 +1,9 @@
 ### Watch files in a folder and run a compile command when any are changed
 A portable Windows utility mainly intended for the [Haxe](https://haxe.org/) programming language, but can run any commands, including your favourite compilers.
 
-![a screenshot of Compile Watchdog by Zdeněk Gromnica](docs/images/compile-watchdog-screenshot.png)
+[![A screenshot of Compile Watchdog by Zdeněk Gromnica](docs/images/compile-watchdog-screenshot.png 'Download Compile Watchdog by Zdeněk Gromnica')](https://github.com/FutureMillennium/CompileWatchdog/releases)
+
+### [Download *Compile Watchdog*](https://github.com/FutureMillennium/CompileWatchdog/releases)
 
 Requires **[.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)**, which should already be included with Windows.
 
