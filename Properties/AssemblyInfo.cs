@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CompileWatchdog")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Compile Watchdog")]
+[assembly: AssemblyDescription("Watch files in a folder and run a compile command when any are changed")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CompileWatchdog")]
-[assembly: AssemblyCopyright("Copyright ©  2024")]
+[assembly: AssemblyCompany("Zdeněk Gromnica")]
+[assembly: AssemblyProduct("Compile Watchdog")]
+[assembly: AssemblyCopyright("Copyright © 2024 Zdeněk Gromnica")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

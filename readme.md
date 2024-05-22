@@ -3,7 +3,7 @@ A portable Windows utility mainly intended for the [Haxe](https://haxe.org/) pro
 
 ![a screenshot of Compile Watchdog by Zdeněk Gromnica](docs/images/compile-watchdog-screenshot.png)
 
-Requires **[.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.30-windows-x64-installer)**.
+Requires **[.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)**, which should already be included with Windows.
 
 **Watched directories** – a list of directories that are being monitored for file changes. Drag and drop a directory into the window to add it to the list. When checked, watches for all file changes including subdirectories.
 
@@ -27,4 +27,4 @@ If both outputs are empty, "(The output was empty.)" is shown.
 
 I made this because existing solutions I found required several (!) package managers and had dozens of dependencies, and that's just no good.
 
-It should be possible to compile this with much older versions of .NET, even .NET Framework, as it doesn't do anything unusual. I have no idea which versions of .NET Windows ships with these days. I would hope it would “just work”, but you never know with Microsoft.
+It should be possible to compile this with much older versions of .NET Framework, as it doesn't do anything unusual. I have no idea which versions of .NET Windows ships with these days. I would hope it would “just work”, but you never know with Microsoft.
