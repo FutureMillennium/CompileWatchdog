@@ -55,11 +55,11 @@
 			// 
 			// quitButton
 			// 
-			this.quitButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.quitButton.Location = new System.Drawing.Point(639, 482);
+			this.quitButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.quitButton.Location = new System.Drawing.Point(653, 9);
 			this.quitButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.quitButton.Name = "quitButton";
-			this.quitButton.Size = new System.Drawing.Size(156, 57);
+			this.quitButton.Size = new System.Drawing.Size(142, 31);
 			this.quitButton.TabIndex = 5;
 			this.quitButton.Text = "&Quit";
 			this.quitButton.UseVisualStyleBackColor = true;
@@ -201,7 +201,7 @@
 			// 
 			this.minimiseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.minimiseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.minimiseButton.Location = new System.Drawing.Point(475, 482);
+			this.minimiseButton.Location = new System.Drawing.Point(639, 482);
 			this.minimiseButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.minimiseButton.Name = "minimiseButton";
 			this.minimiseButton.Size = new System.Drawing.Size(156, 57);
@@ -230,13 +230,13 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.minimiseButton;
 			this.ClientSize = new System.Drawing.Size(808, 553);
+			this.Controls.Add(this.quitButton);
 			this.Controls.Add(this.popUpOnErorrCheckbox);
 			this.Controls.Add(this.minimiseButton);
 			this.Controls.Add(this.compileNowButton);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.checkedListBox1);
-			this.Controls.Add(this.quitButton);
 			this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.Name = "MainForm";
