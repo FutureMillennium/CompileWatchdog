@@ -103,14 +103,19 @@ namespace CompileWatchdog {
 		}
 
 		private void compileNowButton_Click(object sender, EventArgs e) {
-			// compile all checked dirs
-			foreach (WatchedDir wd in watchedDirs) {
+			int nCompiled = 0;
+			for (int i = 0; i < watchedDirs.Count; i++) {
+				var wd = watchedDirs[i];
 				if (wd.enabled) {
-					HandleCompile(wd);
+					nCompiled++;
+					HandleCompile(wd, i);
 				}
 			}
 			timer1.Stop();
 			MyRefresh();
+			if (nCompiled == 0) {
+				MessageBox.Show("Nothing to compile! Add directories by dragging them into the window and make sure they're checked in the list.", "Compile Watchdog", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			}
 		}
 
 		void Add(WatchedDir wd, bool addToWD = true) {
@@ -130,8 +135,8 @@ namespace CompileWatchdog {
 			watchers.Add(watcher);
 		}
 
-		void HandleCompile(WatchedDir wd) {
-			if (checkedListBox1.SelectedIndex >= 0 && watchedDirs[checkedListBox1.SelectedIndex] == wd) {
+		void HandleCompile(WatchedDir wd, int index) {
+			if (checkedListBox1.SelectedIndex == index) {
 				lastOutputTextBox.Text = "(Compiling…)";
 				this.Refresh();
 			}
@@ -139,24 +144,30 @@ namespace CompileWatchdog {
 			if (wd.lastError.Length > 0) {
 				if (this.InvokeRequired) {
 					this.Invoke(new Action(() => {
-						RefocusRefresh(wd);
+						RefocusRefresh(wd, index);
 					}));
 				} else {
-					RefocusRefresh(wd);
+					RefocusRefresh(wd, index);
 				}
 			}
 		}
 
-		void RefocusRefresh(WatchedDir wd) {
+		void RefocusRefresh(WatchedDir wd, int index) {
+			checkedListBox1.SelectedIndex = index;
 			if (popUpOnErorrCheckbox.Checked) {
 				this.Show();
 				this.Focus();
+				notifyIcon1.Visible = false;
 			}
 		}
 
 		void MyRefresh() {
 			if (checkedListBox1.SelectedIndex >= 0) {
-				lastOutputTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].lastOutput;
+				if (watchedDirs[checkedListBox1.SelectedIndex].lastOutput.Length > 0 && watchedDirs[checkedListBox1.SelectedIndex].lastError.Length == 0) {
+					lastOutputTextBox.Text = "(The output was empty.)";
+				} else {
+					lastOutputTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].lastOutput;
+				}
 				lastErrorTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].lastError;
 			}
 		}
@@ -240,9 +251,10 @@ namespace CompileWatchdog {
 		}
 		// compilation timer
 		void timer1_Tick(object sender, EventArgs e) {
-			foreach (WatchedDir wd in watchedDirs) {
+			for (int i = 0; i < watchedDirs.Count; i++) {
+				var wd = watchedDirs[i];
 				if (wd.needsCompile) {
-					HandleCompile(wd);
+					HandleCompile(wd, i);
 				}
 			}
 			timer1.Stop();

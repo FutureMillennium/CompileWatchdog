@@ -67,9 +67,8 @@
 			// 
 			// checkedListBox1
 			// 
-			this.checkedListBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.checkedListBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
 			this.checkedListBox1.FormattingEnabled = true;
 			this.checkedListBox1.Location = new System.Drawing.Point(13, 35);
 			this.checkedListBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -92,7 +91,8 @@
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.Controls.Add(this.label3);
@@ -122,6 +122,8 @@
 			// 
 			// label3
 			// 
+			this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.label3.AutoSize = true;
 			this.label3.Location = new System.Drawing.Point(8, 291);
 			this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -132,6 +134,8 @@
 			// 
 			// label2
 			// 
+			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.label2.AutoSize = true;
 			this.label2.Location = new System.Drawing.Point(8, 142);
 			this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -142,7 +146,8 @@
 			// 
 			// lastOutputTextBox
 			// 
-			this.lastOutputTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.lastOutputTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.lastOutputTextBox.Font = new System.Drawing.Font("Consolas", 14.25F);
 			this.lastOutputTextBox.Location = new System.Drawing.Point(8, 168);
 			this.lastOutputTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -154,7 +159,9 @@
 			// 
 			// lastErrorTextBox
 			// 
-			this.lastErrorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.lastErrorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.lastErrorTextBox.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lastErrorTextBox.Location = new System.Drawing.Point(8, 315);
 			this.lastErrorTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -166,6 +173,8 @@
 			// 
 			// compileCommandTextBox
 			// 
+			this.compileCommandTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.compileCommandTextBox.Font = new System.Drawing.Font("Consolas", 14.25F);
 			this.compileCommandTextBox.Location = new System.Drawing.Point(9, 53);
 			this.compileCommandTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -197,12 +206,13 @@
 			this.minimiseButton.Name = "minimiseButton";
 			this.minimiseButton.Size = new System.Drawing.Size(156, 57);
 			this.minimiseButton.TabIndex = 4;
-			this.minimiseButton.Text = "&Minimise";
+			this.minimiseButton.Text = "&Minimise to Tray";
 			this.minimiseButton.UseVisualStyleBackColor = true;
 			this.minimiseButton.Click += new System.EventHandler(this.minimiseButton_Click);
 			// 
 			// popUpOnErorrCheckbox
 			// 
+			this.popUpOnErorrCheckbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.popUpOnErorrCheckbox.AutoSize = true;
 			this.popUpOnErorrCheckbox.Checked = true;
 			this.popUpOnErorrCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
