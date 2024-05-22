@@ -8,17 +8,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace CompileWatchdog {
 	public partial class MainForm : Form {
 		public List<WatchedDir> watchedDirs = new List<WatchedDir>();
-		public List<FileSystemWatcher> watchers = new List<FileSystemWatcher>();
+		List<FileSystemWatcher> watchers = new List<FileSystemWatcher>();
+
+		DispatcherTimer timer1 = new DispatcherTimer();
 
 		public MainForm() {
 			InitializeComponent();
 			LoadSettings();
 			this.Icon = Properties.Resources.icon;
 			this.notifyIcon1.Icon = Properties.Resources.icon;
+
+			timer1.Interval = new TimeSpan(0, 0, 0, 0, 16);
+			timer1.Tick += new EventHandler(timer1_Tick);
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -103,6 +109,8 @@ namespace CompileWatchdog {
 					HandleCompile(wd);
 				}
 			}
+			timer1.Stop();
+			MyRefresh();
 		}
 
 		void Add(WatchedDir wd, bool addToWD = true) {
@@ -123,6 +131,10 @@ namespace CompileWatchdog {
 		}
 
 		void HandleCompile(WatchedDir wd) {
+			if (checkedListBox1.SelectedIndex >= 0 && watchedDirs[checkedListBox1.SelectedIndex] == wd) {
+				lastOutputTextBox.Text = "(Compiling…)";
+				this.Refresh();
+			}
 			Compile(wd);
 			if (wd.lastError.Length > 0) {
 				if (this.InvokeRequired) {
@@ -136,12 +148,17 @@ namespace CompileWatchdog {
 		}
 
 		void RefocusRefresh(WatchedDir wd) {
+			if (popUpOnErorrCheckbox.Checked) {
+				this.Show();
+				this.Focus();
+			}
+		}
+
+		void MyRefresh() {
 			if (checkedListBox1.SelectedIndex >= 0) {
 				lastOutputTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].lastOutput;
 				lastErrorTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].lastError;
 			}
-			this.Show();
-			this.Focus();
 		}
 
 		void Compile(WatchedDir wd) {
@@ -166,6 +183,8 @@ namespace CompileWatchdog {
 			if (error.Length > 0) {
 				MessageBox.Show(error);
 			}*/
+
+			wd.needsCompile = false;
 		}
 
 		void SaveSettings() {
@@ -186,7 +205,7 @@ namespace CompileWatchdog {
 				foreach (WatchedDir wd in watchedDirs) {
 					Add(wd, false);
 					//checkedListBox1.Items.Add(wd.path, wd.enabled);
-					wd.justFired = false;
+					//wd.justFired = false;
 				}
 			}
 		
@@ -207,14 +226,32 @@ namespace CompileWatchdog {
 			// compile
 			foreach (WatchedDir wd in watchedDirs) {
 				if (e.FullPath.StartsWith(wd.path)) {
-					if (wd.justFired) { // Assuming the event fires twice because of Windows behaviour.
+					wd.needsCompile = true;
+					timer1.Start();
+					break;
+					/*if (wd.justFired) { // Assuming the event fires twice because of Windows behaviour.
 						wd.justFired = false;
 					} else {
 						HandleCompile(wd);
 						wd.justFired = true;
-					}
+					}*/
 				}
 			}
+		}
+		// compilation timer
+		void timer1_Tick(object sender, EventArgs e) {
+			foreach (WatchedDir wd in watchedDirs) {
+				if (wd.needsCompile) {
+					HandleCompile(wd);
+				}
+			}
+			timer1.Stop();
+			MyRefresh();
+		}
+
+		private void minimiseButton_Click(object sender, EventArgs e) {
+			notifyIcon1.Visible = true;
+			this.Hide();
 		}
 	}
 
@@ -224,6 +261,7 @@ namespace CompileWatchdog {
 		public string compileCommand;
 		public string lastOutput;
 		public string lastError;
-		public bool justFired = false;
+		//public bool justFired = false;
+		public bool needsCompile = false;
 	}
 }
