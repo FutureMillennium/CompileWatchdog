@@ -131,7 +131,7 @@
 			this.ignoreTextBox.Name = "ignoreTextBox";
 			this.ignoreTextBox.Size = new System.Drawing.Size(330, 29);
 			this.ignoreTextBox.TabIndex = 1;
-			this.ignoreTextBox.Text = "bin";
+			this.ignoreTextBox.Text = "bin;.git";
 			this.ignoreTextBox.TextChanged += new System.EventHandler(this.ignoreTextBox_TextChanged);
 			// 
 			// label4

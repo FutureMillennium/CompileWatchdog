@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
 
@@ -26,6 +20,15 @@ namespace CompileWatchdog {
 
 			timer1.Interval = new TimeSpan(0, 0, 0, 0, 16);
 			timer1.Tick += new EventHandler(timer1_Tick);
+
+			var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+			string ver;
+			if (version.Build == 0) {
+				ver = version.Major + "." + version.Minor;
+			} else {
+				ver = version.Major + "." + version.Minor + "." + version.Build;
+			}
+			this.Text = "Compile Watchdog v" + ver + " by Zdeněk Gromnica";
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -69,14 +72,8 @@ namespace CompileWatchdog {
 						WatchedDir wd = new WatchedDir();
 						wd.path = files[i];
 						wd.enabled = true;
-						//watchedDirs.Add(wd);
-						//// add and check
-						//checkedListBox1.Items.Add(wd.path, true);
 
 						Add(wd);
-
-						//checkedListBox1.SetItemChecked(checkedListBox1.Items.Count - 1, true);
-						//RefreshWatchedDirs();
 					}
 				}
 				blLoaded = true;
@@ -136,7 +133,6 @@ namespace CompileWatchdog {
 			}
 			checkedListBox1.Items.Add(wd.path, wd.enabled);
 
-			// add a watcher
 			FileSystemWatcher watcher = new FileSystemWatcher();
 			watcher.Path = wd.path;
 			watcher.NotifyFilter = NotifyFilters.LastWrite;
@@ -200,12 +196,6 @@ namespace CompileWatchdog {
 			string error = p.StandardError.ReadToEnd();
 			wd.lastOutput = output;
 			wd.lastError = error;
-			/*if (output.Length > 0) {
-				MessageBox.Show(output);
-			}
-			if (error.Length > 0) {
-				MessageBox.Show(error);
-			}*/
 
 			wd.needsCompile = false;
 		}
@@ -239,8 +229,6 @@ namespace CompileWatchdog {
 				s.Close();
 				foreach (WatchedDir wd in watchedDirs) {
 					Add(wd, false);
-					//checkedListBox1.Items.Add(wd.path, wd.enabled);
-					//wd.justFired = false;
 				}
 			}
 			blLoaded = true;
@@ -257,19 +245,18 @@ namespace CompileWatchdog {
 		}
 
 		private void OnChanged(object source, FileSystemEventArgs e) {
-			//MessageBox.Show("File: " + e.FullPath + " " + e.ChangeType);
-			// compile
+			// This event fires twice per file because of Windows behaviour.
 			foreach (WatchedDir wd in watchedDirs) {
-				if (wd.enabled && e.FullPath.StartsWith(wd.path) && !e.FullPath.StartsWith(wd.path + "\\" + wd.ignore)) {
+				if (wd.enabled && e.FullPath.StartsWith(wd.path)) {
+					string[] ignores = wd.ignore.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (string ignore in ignores) {
+						if (e.FullPath.StartsWith(wd.path + "\\" + ignore)) {
+							return;
+						}
+					}
 					wd.needsCompile = true;
 					timer1.Start();
 					break;
-					/*if (wd.justFired) { // Assuming the event fires twice because of Windows behaviour.
-						wd.justFired = false;
-					} else {
-						HandleCompile(wd);
-						wd.justFired = true;
-					}*/
 				}
 			}
 		}
@@ -305,6 +292,6 @@ namespace CompileWatchdog {
 		public string lastError;
 		//public bool justFired = false;
 		public bool needsCompile = false;
-		public string ignore = "bin";
+		public string ignore = "bin;.git";
 	}
 }
