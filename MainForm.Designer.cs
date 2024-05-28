@@ -41,6 +41,8 @@
 			this.compileNowButton = new System.Windows.Forms.Button();
 			this.minimiseButton = new System.Windows.Forms.Button();
 			this.popUpOnErorrCheckbox = new System.Windows.Forms.CheckBox();
+			this.txtOuput = new System.Windows.Forms.TextBox();
+			this.cancelCompilationButton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -219,7 +221,7 @@
 			this.compileNowButton.TabIndex = 2;
 			this.compileNowButton.Text = "Compile &all now";
 			this.compileNowButton.UseVisualStyleBackColor = true;
-			this.compileNowButton.Click += new System.EventHandler(this.compileNowButton_Click);
+			this.compileNowButton.Click += new System.EventHandler(this.compileAllNowButton_Click);
 			// 
 			// minimiseButton
 			// 
@@ -247,6 +249,34 @@
 			this.popUpOnErorrCheckbox.Text = "&Pop up on compilation error";
 			this.popUpOnErorrCheckbox.UseVisualStyleBackColor = true;
 			// 
+			// txtOuput
+			// 
+			this.txtOuput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtOuput.Font = new System.Drawing.Font("Consolas", 14.25F);
+			this.txtOuput.Location = new System.Drawing.Point(13, 9);
+			this.txtOuput.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+			this.txtOuput.Multiline = true;
+			this.txtOuput.Name = "txtOuput";
+			this.txtOuput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.txtOuput.Size = new System.Drawing.Size(782, 463);
+			this.txtOuput.TabIndex = 6;
+			this.txtOuput.Visible = false;
+			// 
+			// cancelCompilationButton
+			// 
+			this.cancelCompilationButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cancelCompilationButton.Location = new System.Drawing.Point(13, 482);
+			this.cancelCompilationButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+			this.cancelCompilationButton.Name = "cancelCompilationButton";
+			this.cancelCompilationButton.Size = new System.Drawing.Size(156, 57);
+			this.cancelCompilationButton.TabIndex = 7;
+			this.cancelCompilationButton.Text = "&Cancel compilation";
+			this.cancelCompilationButton.UseVisualStyleBackColor = true;
+			this.cancelCompilationButton.Visible = false;
+			this.cancelCompilationButton.Click += new System.EventHandler(this.cancelCompilationButton_Click);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -254,6 +284,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.minimiseButton;
 			this.ClientSize = new System.Drawing.Size(808, 553);
+			this.Controls.Add(this.cancelCompilationButton);
+			this.Controls.Add(this.txtOuput);
 			this.Controls.Add(this.quitButton);
 			this.Controls.Add(this.popUpOnErorrCheckbox);
 			this.Controls.Add(this.minimiseButton);
@@ -296,6 +328,8 @@
 		private System.Windows.Forms.CheckBox popUpOnErorrCheckbox;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.TextBox ignoreTextBox;
+		private System.Windows.Forms.TextBox txtOuput;
+		private System.Windows.Forms.Button cancelCompilationButton;
 	}
 }
 

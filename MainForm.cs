@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Threading;
 
@@ -11,6 +12,11 @@ namespace CompileWatchdog {
 
 		DispatcherTimer timer1 = new DispatcherTimer();
 		bool blLoaded = false;
+		Thread compileThread;
+
+		WatchedDir activeWD;
+		String appName;
+		bool threadFinished = true;
 
 		public MainForm() {
 			InitializeComponent();
@@ -28,7 +34,8 @@ namespace CompileWatchdog {
 			} else {
 				ver = version.Major + "." + version.Minor + "." + version.Build;
 			}
-			this.Text = "Compile Watchdog v" + ver + " by Zdeněk Gromnica";
+			appName = "Compile Watchdog v" + ver + " by Zdeněk Gromnica";
+			this.Text = appName;
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -95,6 +102,7 @@ namespace CompileWatchdog {
 			} else {
 				groupBox1.Visible = false;
 			}
+			MyRefresh();
 		}
 
 		private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e) {
@@ -111,17 +119,20 @@ namespace CompileWatchdog {
 			}
 		}
 
-		private void compileNowButton_Click(object sender, EventArgs e) {
+		private void compileAllNowButton_Click(object sender, EventArgs e) {
 			int nCompiled = 0;
 			for (int i = 0; i < watchedDirs.Count; i++) {
 				var wd = watchedDirs[i];
 				if (wd.enabled) {
+					wd.needsCompile = true;
 					nCompiled++;
-					HandleCompile(wd, i);
+					//HandleCompile(wd, i);
 				}
 			}
+			txtOuput.Text = "";
+			CompileAll();
 			timer1.Stop();
-			MyRefresh();
+			//MyRefresh();
 			if (nCompiled == 0) {
 				MessageBox.Show("Nothing to compile! Add directories by dragging them into the window and make sure they're checked in the list.", "Compile Watchdog", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
@@ -143,22 +154,9 @@ namespace CompileWatchdog {
 			watchers.Add(watcher);
 		}
 
-		void HandleCompile(WatchedDir wd, int index) {
-			if (checkedListBox1.SelectedIndex == index) {
-				lastOutputTextBox.Text = "(Compiling…)";
-				this.Refresh();
-			}
-			Compile(wd);
-			if (wd.lastError.Length > 0) {
-				if (this.InvokeRequired) {
-					this.Invoke(new Action(() => {
-						RefocusRefresh(wd, index);
-					}));
-				} else {
-					RefocusRefresh(wd, index);
-				}
-			}
-		}
+		/*void HandleCompile(WatchedDir wd, int index) {
+			Compile(wd, index);
+		}*/
 
 		void RefocusRefresh(WatchedDir wd, int index) {
 			checkedListBox1.SelectedIndex = index;
@@ -167,11 +165,12 @@ namespace CompileWatchdog {
 				this.Focus();
 				notifyIcon1.Visible = false;
 			}
+			MyRefresh();
 		}
 
 		void MyRefresh() {
 			if (checkedListBox1.SelectedIndex >= 0) {
-				if (watchedDirs[checkedListBox1.SelectedIndex].lastOutput.Length == 0 && watchedDirs[checkedListBox1.SelectedIndex].lastError.Length == 0) {
+				if (watchedDirs[checkedListBox1.SelectedIndex].lastOutput?.Length == 0 && watchedDirs[checkedListBox1.SelectedIndex].lastError?.Length == 0) {
 					lastOutputTextBox.Text = "(The output was empty.)";
 				} else {
 					lastOutputTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].lastOutput;
@@ -180,7 +179,27 @@ namespace CompileWatchdog {
 			}
 		}
 
-		void Compile(WatchedDir wd) {
+		void HandleCompile(WatchedDir wd, int index) {
+			// If there's no compileThread or it's finished, start a new one:
+			if (compileThread == null || !compileThread.IsAlive || threadFinished) {
+				this.Text = "[COMPILING] " + appName;
+				if (checkedListBox1.SelectedIndex == index) {
+					lastOutputTextBox.Text = "(Compiling…)";
+					this.Refresh();
+				}
+				txtOuput.Text += "[COMPILING]" +Environment.NewLine + wd.path + "\\" + wd.compileCommand + "\r\n";
+				txtOuput.Visible = true;
+				cancelCompilationButton.Text = "&Cancel compilation";
+				cancelCompilationButton.Visible = true;
+				compileThread = new Thread(() => CompileThread(wd,index));
+				compileThread.Start();
+				threadFinished = false;
+			}
+		}
+
+		void CompileThread(WatchedDir wd, int index) {
+			threadFinished = false;
+			activeWD = wd;
 			// run compile command
 			System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo();
 			psi.FileName = "cmd.exe";
@@ -190,17 +209,64 @@ namespace CompileWatchdog {
 			psi.CreateNoWindow = true;
 			psi.RedirectStandardOutput = true;
 			psi.RedirectStandardError = true;
-			System.Diagnostics.Process p = System.Diagnostics.Process.Start(psi);
+			System.Diagnostics.Process p = new System.Diagnostics.Process();
+			p.OutputDataReceived += P_OutputDataReceived;
+			p.ErrorDataReceived += P_ErrorDataReceived;
+			p.StartInfo = psi;
+			p.Start();
+			wd.lastOutput = "";
+			wd.lastError = "";
+			p.BeginErrorReadLine();
+			p.BeginOutputReadLine();
 			p.WaitForExit();
-			string output = p.StandardOutput.ReadToEnd();
-			string error = p.StandardError.ReadToEnd();
-			wd.lastOutput = output;
-			wd.lastError = error;
+			//string output = p.StandardOutput.ReadToEnd();
+			//string error = p.StandardError.ReadToEnd();
+			//wd.lastOutput = output;
+			//wd.lastError = error;
 
 			wd.needsCompile = false;
+			
+			//if (this.InvokeRequired) {
+			this.Invoke(new Action(() => {
+				txtOuput.Visible = false;
+				cancelCompilationButton.Visible = false;
+				threadFinished = true;
+				if (wd.lastError.Length > 0) {
+					this.Text = "[ERROR] " + appName;
+					RefocusRefresh(wd, index);
+				} else {
+					this.Text = appName;
+					MyRefresh();
+					CompileAll();
+				}
+			}));
+			//} else {
+			//	RefocusRefresh(wd, index);
+			//}
+		}
+
+		private void P_OutputDataReceived(object sender, System.Diagnostics.DataReceivedEventArgs e) {
+			if (e.Data == null) { return; }
+
+			this.Invoke(new Action(() => {
+				activeWD.lastOutput += e.Data + "\r\n";
+				txtOuput.Text += e.Data + "\r\n";
+			}));
+		}
+		private void P_ErrorDataReceived(object sender, System.Diagnostics.DataReceivedEventArgs e) {
+			if (e.Data == null) { return; }
+
+			this.Invoke(new Action(() => {
+				activeWD.lastError += e.Data + "\r\n";
+				txtOuput.Text += e.Data + "\r\n";
+			}));
 		}
 
 		void SaveSettings() {
+			if (watchedDirs == null || watchedDirs.Count == 0) {
+				return;
+			}
+
 			// filename is exe name + Settings.xml
 			var filename = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
 			if (filename.EndsWith(".exe")) {
@@ -222,14 +288,28 @@ namespace CompileWatchdog {
 			}
 			filename += "Settings.xml";
 
-			if (System.IO.File.Exists(filename)) {
-				System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(List<WatchedDir>));
-				System.IO.Stream s = new System.IO.FileStream(filename, System.IO.FileMode.Open);
-				watchedDirs = (List<WatchedDir>)xs.Deserialize(s);
-				s.Close();
-				foreach (WatchedDir wd in watchedDirs) {
-					Add(wd, false);
+			try {
+				if (System.IO.File.Exists(filename)) {
+					System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(List<WatchedDir>));
+					System.IO.Stream s = new System.IO.FileStream(filename, System.IO.FileMode.Open);
+					watchedDirs = (List<WatchedDir>)xs.Deserialize(s);
+					s.Close();
+					foreach (WatchedDir wd in watchedDirs) {
+						Add(wd, false);
+					}
 				}
+			} catch (Exception ex) {
+				txtOuput.Text = "Error reading " + filename + Environment.NewLine + Environment.NewLine + ex.Message + Environment.NewLine;
+				if (ex.InnerException != null) {
+					txtOuput.Text += Environment.NewLine + ex.InnerException.Message + Environment.NewLine;
+				}
+				txtOuput.Text += Environment.NewLine + "Try editing the file and removing the problematic part, usually the output. The settings XML file won't be saved unless you add a new watched directory and quit.";
+				txtOuput.Visible = true;
+				cancelCompilationButton.Text = "O&K";
+				cancelCompilationButton.Visible = true;
+				compileNowButton.Visible = false;
+				popUpOnErorrCheckbox.Visible = false;
+				minimiseButton.Visible = false;
 			}
 			blLoaded = true;
 		}
@@ -262,14 +342,25 @@ namespace CompileWatchdog {
 		}
 		// compilation timer
 		void timer1_Tick(object sender, EventArgs e) {
-			for (int i = 0; i < watchedDirs.Count; i++) {
+			/*for (int i = 0; i < watchedDirs.Count; i++) {
 				var wd = watchedDirs[i];
 				if (wd.needsCompile) {
 					HandleCompile(wd, i);
 				}
-			}
+			}*/
+			txtOuput.Text = "";
+			CompileAll();
 			timer1.Stop();
-			MyRefresh();
+			//MyRefresh();
+		}
+
+		void CompileAll() {
+			for (int i = 0; i < watchedDirs.Count; i++) {
+				var wd = watchedDirs[i];
+				if (wd.enabled && wd.needsCompile) {
+					HandleCompile(wd, i);
+				}
+			}
 		}
 
 		private void minimiseButton_Click(object sender, EventArgs e) {
@@ -281,6 +372,22 @@ namespace CompileWatchdog {
 			if (checkedListBox1.SelectedIndex >= 0) {
 				watchedDirs[checkedListBox1.SelectedIndex].ignore = ignoreTextBox.Text;
 			}
+		}
+
+		private void cancelCompilationButton_Click(object sender, EventArgs e) {
+			if (compileThread != null && compileThread.IsAlive) {
+				compileThread.Abort();
+				txtOuput.Text += "\r\nCompilation cancelled by user.\r\n";
+			}
+			for (int i = 0; i < watchedDirs.Count; i++) {
+				var wd = watchedDirs[i];
+				wd.needsCompile = false;
+			}
+			txtOuput.Visible = false;
+			cancelCompilationButton.Visible = false;
+			compileNowButton.Visible = true;
+			popUpOnErorrCheckbox.Visible = true;
+			minimiseButton.Visible = true;
 		}
 	}
 
