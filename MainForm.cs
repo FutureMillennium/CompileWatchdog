@@ -170,12 +170,18 @@ namespace CompileWatchdog {
 
 		void MyRefresh() {
 			if (checkedListBox1.SelectedIndex >= 0) {
+				var wd = watchedDirs[checkedListBox1.SelectedIndex];
 				if (watchedDirs[checkedListBox1.SelectedIndex].lastOutput?.Length == 0 && watchedDirs[checkedListBox1.SelectedIndex].lastError?.Length == 0) {
 					lastOutputTextBox.Text = "(The output was empty.)";
 				} else {
 					lastOutputTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].lastOutput;
 				}
 				lastErrorTextBox.Text = watchedDirs[checkedListBox1.SelectedIndex].lastError;
+				if (wd.lastCompile == DateTime.MinValue) {
+					label2.Text = "Last standard &output:";
+				} else {
+					label2.Text = "Last standard &output: " + watchedDirs[checkedListBox1.SelectedIndex].lastCompile.ToString();
+				}
 			}
 		}
 
@@ -187,7 +193,7 @@ namespace CompileWatchdog {
 					lastOutputTextBox.Text = "(Compiling…)";
 					this.Refresh();
 				}
-				txtOuput.Text += "[COMPILING]" +Environment.NewLine + wd.path + "\\" + wd.compileCommand + "\r\n";
+				txtOuput.Text += "[COMPILING] " + DateTime.Now.ToString() +Environment.NewLine + wd.path + "\\" + wd.compileCommand + "\r\n";
 				txtOuput.Visible = true;
 				cancelCompilationButton.Text = "&Cancel compilation";
 				cancelCompilationButton.Visible = true;
@@ -200,6 +206,7 @@ namespace CompileWatchdog {
 		void CompileThread(WatchedDir wd, int index) {
 			threadFinished = false;
 			activeWD = wd;
+			wd.lastCompile = DateTime.Now;
 			// run compile command
 			System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo();
 			psi.FileName = "cmd.exe";
@@ -400,5 +407,6 @@ namespace CompileWatchdog {
 		//public bool justFired = false;
 		public bool needsCompile = false;
 		public string ignore = "bin;.git";
+		public DateTime lastCompile;
 	}
 }
